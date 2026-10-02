@@ -1,0 +1,22 @@
+name: Issue guard
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  owner-only:
+    if: github.event.issue.user.login != github.repository_owner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close issues not created by the owner
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason "not planned" \
+            --comment "Only the repository owner can create issues. Please raise this with @$OWNER instead."
