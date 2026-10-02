@@ -8,6 +8,7 @@ This file defines the working standards for human and AI contributors in this re
 
 These apply to every AI agent (Claude, Codex, Gemini, ChatGPT, Copilot, etc.). The human you are working with is your **co-author**.
 
+- **Check your environment first.** At the start of every session, verify that `gh` is installed and authenticated and that git hooks are enabled (see [Local Setup](#local-setup)). If anything is missing, set it up with your co-author's approval before doing anything else.
 - **Your role is your co-author's role.** Never do anything their [role](#roles) does not allow, even if asked. If a task needs a higher role, stop and tell your co-author.
 - **Always start in plan mode.** Explore read-only, then present a plan and wait for your co-author's approval before editing files, creating branches, or running anything that changes state. In Claude Code this is the default via `.claude/settings.json`; other agents must follow it manually.
 - **Ask, don't assume.** Ask as many clarifying questions as needed before planning. Whenever anything is ambiguous — requirements, scope, naming, approach, acceptance criteria, test cases — ask instead of guessing. This applies during implementation too, not only at the start.
@@ -69,10 +70,35 @@ If the logins match, the role is **Owner**; otherwise it is **Contributor** unle
 
 ## Local Setup
 
-Enable the repository's git hooks once per clone:
+Every contributor — human or agent — needs this once per machine/clone. Agents check it at the start of every session.
+
+1. **Install the GitHub CLI** (`gh`), used for issues, branches, PRs, and role checks:
+
+   ```bash
+   winget install --id GitHub.cli   # Windows
+   brew install gh                  # macOS
+   ```
+
+   Linux: see [cli.github.com](https://cli.github.com/).
+
+2. **Authenticate** (interactive — agents ask their co-author to run it):
+
+   ```bash
+   gh auth login
+   gh auth refresh -s project   # needed for the project board
+   ```
+
+3. **Enable the repository's git hooks:**
+
+   ```bash
+   git config core.hooksPath .githooks
+   ```
+
+Verify:
 
 ```bash
-git config core.hooksPath .githooks
+gh auth status                    # logged in
+git config --get core.hooksPath   # prints .githooks
 ```
 
 The `pre-push` hook blocks pushes to `main` and runs [`scripts/check-conventions.sh`](scripts/check-conventions.sh) (branch name, commit messages, AI attribution). If `scripts/test.sh` exists, it also runs it. CI runs the same checks, so a push that skips the hook still fails review.

@@ -2,9 +2,12 @@
 
 ## Setup
 
-Enable the repository's git hooks (once per clone):
+Once per machine/clone — full details in [AGENTS.md](AGENTS.md#local-setup):
 
 ```bash
+winget install --id GitHub.cli        # or: brew install gh
+gh auth login
+gh auth refresh -s project
 git config core.hooksPath .githooks
 ```
 
