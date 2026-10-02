@@ -5,7 +5,8 @@ set -euo pipefail
 
 BRANCH_RE='^(feature|bugfix|hotfix|refactor|docs|test|chore|spike|research)/[0-9]+-[a-z0-9]+(-[a-z0-9]+)*$'
 SUBJECT_RE='^(feat|fix|refactor|docs|test|chore|style|perf|ci|build)(\([a-z0-9._/-]+\))?!?: [^A-Z ].*[^.]$'
-AI_RE='co-authored-by:.*(claude|anthropic|gemini|codex|openai|chatgpt|copilot)|generated (with|by) .*(claude|gemini|codex|chatgpt|copilot)'
+AI_TOOLS='claude|anthropic|gemini|codex|openai|chatgpt|copilot|cursor|devin|aider|windsurf'
+AI_RE="co-authored-by:.*($AI_TOOLS)|generated (with|by) .*($AI_TOOLS)|noreply@anthropic\.com"
 
 status=0
 
