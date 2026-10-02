@@ -9,6 +9,9 @@ AI_TOOLS='claude|anthropic|gemini|codex|openai|chatgpt|copilot|cursor|devin|aide
 AI_RE="co-authored-by:.*($AI_TOOLS)|generated (with|by) .*($AI_TOOLS)|noreply@anthropic\.com"
 
 status=0
+branch=''
+body=''
+has_body=0
 
 report() {
   local level=$1; shift
@@ -24,6 +27,7 @@ fail() { report error "$@"; status=1; }
 while [[ $# -gt 0 ]]; do
   case $1 in
     --branch)
+      branch=$2
       if [[ ! "$2" =~ $BRANCH_RE ]]; then
         fail "branch '$2' must match <type>/<issue-number>-<short-description>"
       fi
@@ -37,6 +41,8 @@ while [[ $# -gt 0 ]]; do
       fi
       shift 2 ;;
     --body)
+      body=$2
+      has_body=1
       if grep -qiE "$AI_RE" <<< "$2"; then
         fail "PR description contains AI attribution (Co-Authored-By / Generated with ...); remove it"
       fi
@@ -61,5 +67,13 @@ while [[ $# -gt 0 ]]; do
       exit 2 ;;
   esac
 done
+
+# The PR description must link the issue named in the branch (CI only; the hook has no body).
+if [[ $has_body -eq 1 && "$branch" =~ ^[a-z]+/([0-9]+)- ]]; then
+  issue=${BASH_REMATCH[1]}
+  if ! grep -qiE "(close[sd]?|fix(e[sd])?|resolve[sd]?) #$issue\b" <<< "$body"; then
+    fail "PR description must contain 'Closes #$issue' to link the branch's issue"
+  fi
+fi
 
 exit $status
