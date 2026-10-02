@@ -1,0 +1,41 @@
+name: Conventions
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  conventions:
+    runs-on: ubuntu-latest
+    env:
+      BASE: ${{ github.event.pull_request.base.sha }}
+      HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Branch, PR title and description, commits
+        env:
+          BRANCH: ${{ github.head_ref }}
+          TITLE: ${{ github.event.pull_request.title }}
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          bash scripts/check-conventions.sh \
+            --branch "$BRANCH" \
+            --title "$TITLE" \
+            --body "$BODY" \
+            --range "$BASE..$HEAD"
+
+      - name: Protected files
+        if: github.event.pull_request.user.login != github.repository_owner
+        run: |
+          protected='^(AGENTS\.md|CLAUDE\.md|\.github/.*|\.claude/settings\.json|\.githooks/.*|scripts/check-conventions\.sh)$'
+          changed=$(git diff --name-only "$BASE...$HEAD" | grep -E "$protected" || true)
+          if [[ -n "$changed" ]]; then
+            echo "::error::Only the repository owner may change: $(echo $changed)"
+            exit 1
+          fi
