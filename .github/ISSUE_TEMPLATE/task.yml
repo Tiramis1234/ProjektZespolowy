@@ -11,6 +11,8 @@ body:
         - docs
         - test
         - chore
+        - spike
+        - research
     validations:
       required: true
   - type: textarea
