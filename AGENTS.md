@@ -32,6 +32,7 @@ Every contributor has a role. An AI agent has exactly the role of its co-author 
 | Comment on issues                                     |  Yes  |     Yes     |
 | Work on issues assigned to them, move their own cards |  Yes  |     Yes     |
 | Open and review pull requests                         |  Yes  |     Yes     |
+| Merge their own PR once required checks pass          |  Yes  |     Yes     |
 | Change [protected files](#protected-files)            |  Yes  |     No      |
 | Change repository settings, roles, branch protection  |  Yes  |     No      |
 
@@ -122,7 +123,7 @@ When the stack is chosen, add `scripts/test.sh` (unit + regression tests with co
 
 Tasks are tracked as GitHub issues on the project's kanban board (GitHub Projects).
 
-Project board: _TBD — add the link here._
+Project board: <https://github.com/users/Tiramis1234/projects/2>
 
 | Column          | Meaning                                    |
 | --------------- | ------------------------------------------ |
@@ -147,6 +148,16 @@ gh issue view 12 --json assignees,projectItems # check assignee and board status
 gh issue develop 12 --name feature/12-user-login --checkout  # branch linked to the issue
 gh pr create --title "feat(auth): add login" --body-file <file>  # open PR
 ```
+
+Move a card (here issue 12 to **In Progress**):
+
+```bash
+item=$(gh project item-list 2 --owner Tiramis1234 --format json --jq '.items[] | select(.content.number==12) | .id')
+gh project item-edit --project-id PVT_kwHOB15U784BlbR9 --id "$item" \
+  --field-id PVTSSF_lAHOB15U784BlbR9zhkINfQ --single-select-option-id 02a32946
+```
+
+Status option ids: Todo `ef39650f`, In Progress `02a32946`, In Review `7a829419`, Done `363108a7`.
 
 ## Test-Driven Development
 
@@ -258,7 +269,7 @@ Spike and research branches answer a question rather than ship a feature. Record
   Resolve any conflicts, rerun the tests and convention checks, and fix every failure before pushing. Never open a PR with conflicts or failing checks. If `main` moves while the PR is open and causes conflicts or CI failures, repeat this and fix them.
 
   After a rebase, update your already-pushed branch with `git push --force-with-lease` (see [Safety Rules](#safety-rules)).
-- One PR per issue/branch; link the issue (e.g. `Closes #12`).
+- One PR per issue/branch. The description must contain `Closes #<n>`, where `<n>` is the issue number in the branch name; CI rejects it otherwise.
 - Title follows the same format as commits: `<type>(<scope>): <summary>`.
 - Fill in [the PR template](.github/pull_request_template.md). The description carries the detail the commits omit:
   - **What** changed
@@ -266,7 +277,8 @@ Spike and research branches answer a question rather than ship a feature. Record
   - **How** it was verified, including tests added and coverage / mutation results
   - **Remaining gaps** or follow-ups, if any
 - No AI attribution — see [No AI Attribution](#no-ai-attribution).
-- Merge with **rebase** or a **merge commit** — not squash — so one-logical-change commits are preserved.
+- Merge with **rebase** or a **merge commit** — not squash — so one-logical-change commits are preserved. Squash merging is disabled.
+- `main` accepts changes only through PRs. A PR can merge once the required `conventions` check passes and the branch is up to date with `main`; no approval is required, except that changes to [protected files](#protected-files) need the owner's approval. The author merges their own PR.
 
 ## Protected Files
 
