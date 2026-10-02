@@ -67,7 +67,7 @@ If the logins match, the role is **Owner**; otherwise it is **Contributor** unle
 9. Update docs when setup, run commands, or behavior changed.
 10. Add an ADR when the change introduces new functionality or an architectural decision (see [Architecture Decision Records](#architecture-decision-records-adr)).
 11. Pull the latest `main` into your branch and fix any conflicts or failures (see [Pull Requests](#pull-requests)).
-12. Push (the [pre-push hook](#local-setup) checks conventions and tests), open a pull request using the PR template, link the issue, and move the card to **In Review**.
+12. Run `scripts/review.sh` from the issue branch. It pushes (the [pre-push hook](#local-setup) checks conventions and tests), opens a pull request from the PR template with `Closes #<n>`, and moves the card to **In Review**. Then fill in the PR description. Use `--dry-run` to preview.
 
 ## Local Setup
 
@@ -146,13 +146,13 @@ gh issue list --assignee @me --state open      # my assigned issues
 gh issue view 12 --comments                    # read issue 12 and its discussion
 gh issue view 12 --json assignees,projectItems # check assignee and board status
 gh issue develop 12 --name feature/12-user-login --checkout  # branch linked to the issue
-gh pr create --title "feat(auth): add login" --body-file <file>  # open PR
+scripts/review.sh                              # push, open PR, move card to In Review
 ```
 
 Move a card (here issue 12 to **In Progress**):
 
 ```bash
-item=$(gh project item-list 2 --owner Tiramis1234 --format json --jq '.items[] | select(.content.number==12) | .id')
+item=$(gh project item-list 2 --owner Tiramis1234 --limit 1000 --format json --jq '.items[] | select(.content.number==12) | .id')
 gh project item-edit --project-id PVT_kwHOB15U784BlbR9 --id "$item" \
   --field-id PVTSSF_lAHOB15U784BlbR9zhkINfQ --single-select-option-id 02a32946
 ```

@@ -14,3 +14,4 @@ To add an ADR, copy [template.md](template.md) to `NNNN-short-title.md` (next fr
 | [0004](0004-test-driven-development.md)               | Test-driven development              | Accepted |
 | [0005](0005-roles-and-pre-push-checks.md)             | Roles, owner-only issues, pre-push   | Accepted |
 | [0006](0006-server-side-enforcement.md)               | Enforce workflow rules on GitHub     | Accepted |
+| [0007](0007-local-script-opens-prs.md)                | Local script opens PRs               | Accepted |
