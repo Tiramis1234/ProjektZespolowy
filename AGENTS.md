@@ -8,13 +8,18 @@ This file defines the working standards for human and AI contributors in this re
 
 These apply to every AI agent (Claude, Codex, Gemini, ChatGPT, Copilot, etc.). The human you are working with is your **co-author**.
 
+- **Check your environment first.** At the start of every session, verify that `gh` is installed and authenticated and that git hooks are enabled (see [Local Setup](#local-setup)). If anything is missing, set it up with your co-author's approval before doing anything else.
 - **Your role is your co-author's role.** Never do anything their [role](#roles) does not allow, even if asked. If a task needs a higher role, stop and tell your co-author.
 - **Always start in plan mode.** Explore read-only, then present a plan and wait for your co-author's approval before editing files, creating branches, or running anything that changes state. In Claude Code this is the default via `.claude/settings.json`; other agents must follow it manually.
 - **Ask, don't assume.** Ask as many clarifying questions as needed before planning. Whenever anything is ambiguous — requirements, scope, naming, approach, acceptance criteria, test cases — ask instead of guessing. This applies during implementation too, not only at the start.
 - **Only work on issues assigned to your co-author** (see [Task Board](#task-board)). If asked to work on anything else, point that out and ask before proceeding.
 - **Follow TDD strictly** (see [Test-Driven Development](#test-driven-development)). Never write production code before a failing test requires it.
-- **Never** add yourself as a co-author or add any AI attribution to commits, PRs, or issues.
+- **Never** add [AI attribution](#no-ai-attribution).
 - **Never** bypass checks (`--no-verify`, disabling hooks, skipping tests, lowering thresholds).
+
+## No AI Attribution
+
+AI tools (Claude, Gemini, Codex, ChatGPT, Copilot, etc.) are never credited anywhere in this repository: no `Co-Authored-By` trailers in commits, no "Generated with ..." footers or co-author lines in PR titles and descriptions, and no attribution in issues or comments. The pre-push hook and CI reject commits and PRs that contain it.
 
 ## Roles
 
@@ -65,10 +70,35 @@ If the logins match, the role is **Owner**; otherwise it is **Contributor** unle
 
 ## Local Setup
 
-Enable the repository's git hooks once per clone:
+Every contributor — human or agent — needs this once per machine/clone. Agents check it at the start of every session.
+
+1. **Install the GitHub CLI** (`gh`), used for issues, branches, PRs, and role checks:
+
+   ```bash
+   winget install --id GitHub.cli   # Windows
+   brew install gh                  # macOS
+   ```
+
+   Linux: see [cli.github.com](https://cli.github.com/).
+
+2. **Authenticate** (interactive — agents ask their co-author to run it):
+
+   ```bash
+   gh auth login
+   gh auth refresh -s project   # needed for the project board
+   ```
+
+3. **Enable the repository's git hooks:**
+
+   ```bash
+   git config core.hooksPath .githooks
+   ```
+
+Verify:
 
 ```bash
-git config core.hooksPath .githooks
+gh auth status                    # logged in
+git config --get core.hooksPath   # prints .githooks
 ```
 
 The `pre-push` hook blocks pushes to `main` and runs [`scripts/check-conventions.sh`](scripts/check-conventions.sh) (branch name, commit messages, AI attribution). If `scripts/test.sh` exists, it also runs it. CI runs the same checks, so a push that skips the hook still fails review.
@@ -122,6 +152,8 @@ gh pr create --title "feat(auth): add login" --body-file <file>  # open PR
 
 All production code is written test-first.
 
+**Applies to:** production code — `feature/`, `bugfix/`, `hotfix/`, `refactor/`, and `test/` branches. **Exempt:** documentation, configuration, and CI-only changes (`docs/`, most `chore/`), and throwaway code on `spike/` and `research/` branches. Exempt changes still must not break existing tests.
+
 **Cycle:**
 
 1. **Red** — write a test for the next small piece of behavior. Run it and confirm it fails for the expected reason.
@@ -131,7 +163,7 @@ All production code is written test-first.
 **Rules:**
 
 - No production code without a failing test that requires it.
-- Every acceptance criterion in the issue maps to at least one test.
+- Every acceptance criterion in the issue maps to at least one test (unit, e2e, or regression — whichever fits).
 - Every commit leaves the suite green: commit a test together with the code that makes it pass.
 - Never delete, skip, or weaken a test to make it pass. Never lower coverage or mutation thresholds without owner approval.
 - Tests are deterministic, isolated, and fast. Unit tests do not touch the real network, clock, filesystem, or randomness — inject or fake them.
@@ -139,12 +171,12 @@ All production code is written test-first.
 
 **Test types:**
 
-| Type           | Purpose                                                   | Required for                                    | Default location     |
-| -------------- | --------------------------------------------------------- | ----------------------------------------------- | -------------------- |
-| **Unit**       | One function/module in isolation                          | All new or changed logic                        | `tests/unit/`        |
-| **E2E**        | Full user flows through the running application           | Every user-facing flow and acceptance criterion | `tests/e2e/`         |
-| **Regression** | Reproduce a fixed bug so it can never return              | Every bug fix — the failing test comes first    | `tests/regression/`  |
-| **Mutation**   | Prove the tests actually catch faults in the code         | All changed code (run in CI)                    | tool config          |
+| Type           | Purpose                                           | Required for                                 | Default location    |
+| -------------- | ------------------------------------------------- | -------------------------------------------- | ------------------- |
+| **Unit**       | One function/module in isolation                  | All new or changed logic                     | `tests/unit/`       |
+| **E2E**        | Full user flows through the running application   | Every new or changed user-facing flow        | `tests/e2e/`        |
+| **Regression** | Reproduce a fixed bug so it can never return      | Every bug fix — the failing test comes first | `tests/regression/` |
+| **Mutation**   | Prove the tests actually catch faults in the code | All changed production code (run in CI)      | tool config         |
 
 Use the stack's conventional layout if it differs from the defaults above, and record it in [Stack and Commands](#stack-and-commands).
 
@@ -212,7 +244,7 @@ Spike and research branches answer a question rather than ship a feature. Record
   ```
 
 - Keep commit messages minimal — a single subject line. No body is needed; the full context (why, how, verification) belongs in the pull request description.
-- **Never** add `Co-Authored-By` trailers or any other attribution for AI tools (Claude, Gemini, Codex, ChatGPT, Copilot, etc.) to commits. The pre-push hook and CI reject them.
+- No AI attribution — see [No AI Attribution](#no-ai-attribution).
 
 ## Pull Requests
 
@@ -224,6 +256,8 @@ Spike and research branches answer a question rather than ship a feature. Record
   ```
 
   Resolve any conflicts, rerun the tests and convention checks, and fix every failure before pushing. Never open a PR with conflicts or failing checks. If `main` moves while the PR is open and causes conflicts or CI failures, repeat this and fix them.
+
+  After a rebase, update your already-pushed branch with `git push --force-with-lease` (see [Safety Rules](#safety-rules)).
 - One PR per issue/branch; link the issue (e.g. `Closes #12`).
 - Title follows the same format as commits: `<type>(<scope>): <summary>`.
 - Fill in [the PR template](.github/pull_request_template.md). The description carries the detail the commits omit:
@@ -231,7 +265,7 @@ Spike and research branches answer a question rather than ship a feature. Record
   - **Why** it changed
   - **How** it was verified, including tests added and coverage / mutation results
   - **Remaining gaps** or follow-ups, if any
-- **Never** add `Co-Authored-By` lines, "Generated with ..." footers, or any other AI attribution to PR titles or descriptions. CI rejects them.
+- No AI attribution — see [No AI Attribution](#no-ai-attribution).
 - Merge with **rebase** or a **merge commit** — not squash — so one-logical-change commits are preserved.
 
 ## Protected Files
@@ -256,7 +290,10 @@ CI fails any PR from someone else that touches them, and `CODEOWNERS` requires t
 
 ## Safety Rules
 
-- Never run destructive commands such as `rm -rf`, `git reset --hard`, or force pushes without explicit approval.
+- Never run destructive commands such as `rm -rf` or `git reset --hard` without explicit approval.
+- Force pushes:
+  - **Allowed:** `git push --force-with-lease` to **your own** issue branch, e.g. after rebasing on `main`.
+  - **Never:** plain `--force`, force-pushing `main`, or force-pushing a branch someone else is working on.
 - Do not overwrite unrelated user-authored changes.
 - If unexpected repo changes appear and they affect the current task, pause and confirm direction.
 - Do not silently change migrations, auth behavior, or public contracts outside the requested scope.
@@ -287,12 +324,11 @@ ADRs live in `docs/adr/` and record why the project is built the way it is.
 A change is complete when:
 
 - The issue was assigned to you (or your co-author), the work stayed within your role, and the plan was approved.
-- Requested behavior is implemented test-first on its own issue branch.
-- Unit tests cover all new logic; e2e tests cover user-facing flows; bug fixes include a regression test.
-- Coverage on new and changed code is 100%, and mutation testing meets the threshold (or gaps are justified).
+- Requested behavior is implemented on its own issue branch.
+- For production code ([exemptions](#test-driven-development)): written test-first; unit tests cover all new logic, e2e tests cover user-facing flows, bug fixes include a regression test; coverage on new and changed code is 100% and mutation testing meets the threshold (or gaps are justified).
 - Documentation is updated when needed.
 - An ADR is added when the change introduces new functionality or an architectural decision.
 - The branch is up to date with `main`, with no conflicts.
 - Commits follow the commit conventions, the pre-push hook and CI pass.
-- A PR is open, linked to the issue, with the template filled in and no AI attribution, and the card is in **In Review**.
+- A PR is open, linked to the issue, with the template filled in, and the card is in **In Review**.
 - The diff is focused and reviewable.
