@@ -1,0 +1,41 @@
+name: Bug
+description: Something does not work as expected
+title: "fix: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happens
+      description: Include error messages or screenshots.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser, version or commit, anything relevant.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How do we know it is fixed?
+      placeholder: |
+        - [ ] Regression test reproduces the bug and passes after the fix
+        - [ ] ...

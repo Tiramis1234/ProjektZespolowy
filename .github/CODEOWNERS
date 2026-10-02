@@ -1,0 +1,7 @@
+# Changes to these paths require review from the repository owner.
+/AGENTS.md                     @Tiramis1234
+/CLAUDE.md                     @Tiramis1234
+/.github/                      @Tiramis1234
+/.claude/settings.json         @Tiramis1234
+/.githooks/                    @Tiramis1234
+/scripts/check-conventions.sh  @Tiramis1234

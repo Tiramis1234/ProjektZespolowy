@@ -1,0 +1,30 @@
+name: Task
+description: Refactor, docs, tests, tooling, CI, or other non-feature work
+labels: ["task"]
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - refactor
+        - docs
+        - test
+        - chore
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What needs to be done and why?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true

@@ -1,0 +1,32 @@
+name: Feature
+description: New functionality
+title: "feat: "
+labels: ["feature"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be possible after this is done, and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Concrete, checkable conditions. Each one becomes at least one test. Agents only work from what is written here.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Out of scope
+      description: What this issue explicitly does not cover.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Designs, links, technical hints, open questions.
