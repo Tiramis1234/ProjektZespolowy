@@ -224,6 +224,8 @@ Spike and research branches answer a question rather than ship a feature. Record
   ```
 
   Resolve any conflicts, rerun the tests and convention checks, and fix every failure before pushing. Never open a PR with conflicts or failing checks. If `main` moves while the PR is open and causes conflicts or CI failures, repeat this and fix them.
+
+  After a rebase, update your already-pushed branch with `git push --force-with-lease` (see [Safety Rules](#safety-rules)).
 - One PR per issue/branch; link the issue (e.g. `Closes #12`).
 - Title follows the same format as commits: `<type>(<scope>): <summary>`.
 - Fill in [the PR template](.github/pull_request_template.md). The description carries the detail the commits omit:
@@ -256,7 +258,10 @@ CI fails any PR from someone else that touches them, and `CODEOWNERS` requires t
 
 ## Safety Rules
 
-- Never run destructive commands such as `rm -rf`, `git reset --hard`, or force pushes without explicit approval.
+- Never run destructive commands such as `rm -rf` or `git reset --hard` without explicit approval.
+- Force pushes:
+  - **Allowed:** `git push --force-with-lease` to **your own** issue branch, e.g. after rebasing on `main`.
+  - **Never:** plain `--force`, force-pushing `main`, or force-pushing a branch someone else is working on.
 - Do not overwrite unrelated user-authored changes.
 - If unexpected repo changes appear and they affect the current task, pause and confirm direction.
 - Do not silently change migrations, auth behavior, or public contracts outside the requested scope.
