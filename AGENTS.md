@@ -13,8 +13,12 @@ These apply to every AI agent (Claude, Codex, Gemini, ChatGPT, Copilot, etc.). T
 - **Ask, don't assume.** Ask as many clarifying questions as needed before planning. Whenever anything is ambiguous — requirements, scope, naming, approach, acceptance criteria, test cases — ask instead of guessing. This applies during implementation too, not only at the start.
 - **Only work on issues assigned to your co-author** (see [Task Board](#task-board)). If asked to work on anything else, point that out and ask before proceeding.
 - **Follow TDD strictly** (see [Test-Driven Development](#test-driven-development)). Never write production code before a failing test requires it.
-- **Never** add yourself as a co-author or add any AI attribution to commits, PRs, or issues.
+- **Never** add [AI attribution](#no-ai-attribution).
 - **Never** bypass checks (`--no-verify`, disabling hooks, skipping tests, lowering thresholds).
+
+## No AI Attribution
+
+AI tools (Claude, Gemini, Codex, ChatGPT, Copilot, etc.) are never credited anywhere in this repository: no `Co-Authored-By` trailers in commits, no "Generated with ..." footers or co-author lines in PR titles and descriptions, and no attribution in issues or comments. The pre-push hook and CI reject commits and PRs that contain it.
 
 ## Roles
 
@@ -214,7 +218,7 @@ Spike and research branches answer a question rather than ship a feature. Record
   ```
 
 - Keep commit messages minimal — a single subject line. No body is needed; the full context (why, how, verification) belongs in the pull request description.
-- **Never** add `Co-Authored-By` trailers or any other attribution for AI tools (Claude, Gemini, Codex, ChatGPT, Copilot, etc.) to commits. The pre-push hook and CI reject them.
+- No AI attribution — see [No AI Attribution](#no-ai-attribution).
 
 ## Pull Requests
 
@@ -235,7 +239,7 @@ Spike and research branches answer a question rather than ship a feature. Record
   - **Why** it changed
   - **How** it was verified, including tests added and coverage / mutation results
   - **Remaining gaps** or follow-ups, if any
-- **Never** add `Co-Authored-By` lines, "Generated with ..." footers, or any other AI attribution to PR titles or descriptions. CI rejects them.
+- No AI attribution — see [No AI Attribution](#no-ai-attribution).
 - Merge with **rebase** or a **merge commit** — not squash — so one-logical-change commits are preserved.
 
 ## Protected Files
@@ -300,5 +304,5 @@ A change is complete when:
 - An ADR is added when the change introduces new functionality or an architectural decision.
 - The branch is up to date with `main`, with no conflicts.
 - Commits follow the commit conventions, the pre-push hook and CI pass.
-- A PR is open, linked to the issue, with the template filled in and no AI attribution, and the card is in **In Review**.
+- A PR is open, linked to the issue, with the template filled in, and the card is in **In Review**.
 - The diff is focused and reviewable.
