@@ -60,7 +60,8 @@ If the logins match, the role is **Owner**; otherwise it is **Contributor** unle
 8. Run the full suite with coverage and mutation testing; close any gaps.
 9. Update docs when setup, run commands, or behavior changed.
 10. Add an ADR when the change introduces new functionality or an architectural decision (see [Architecture Decision Records](#architecture-decision-records-adr)).
-11. Push (the [pre-push hook](#local-setup) checks conventions and tests), open a pull request using the PR template, link the issue, and move the card to **In Review**.
+11. Pull the latest `main` into your branch and fix any conflicts or failures (see [Pull Requests](#pull-requests)).
+12. Push (the [pre-push hook](#local-setup) checks conventions and tests), open a pull request using the PR template, link the issue, and move the card to **In Review**.
 
 ## Local Setup
 
@@ -215,6 +216,14 @@ Spike and research branches answer a question rather than ship a feature. Record
 
 ## Pull Requests
 
+- **Before opening a PR, pull the latest `main` into your branch and fix any problems:**
+
+  ```bash
+  git fetch origin
+  git rebase origin/main   # or: git merge origin/main
+  ```
+
+  Resolve any conflicts, rerun the tests and convention checks, and fix every failure before pushing. Never open a PR with conflicts or failing checks. If `main` moves while the PR is open and causes conflicts or CI failures, repeat this and fix them.
 - One PR per issue/branch; link the issue (e.g. `Closes #12`).
 - Title follows the same format as commits: `<type>(<scope>): <summary>`.
 - Fill in [the PR template](.github/pull_request_template.md). The description carries the detail the commits omit:
@@ -283,6 +292,7 @@ A change is complete when:
 - Coverage on new and changed code is 100%, and mutation testing meets the threshold (or gaps are justified).
 - Documentation is updated when needed.
 - An ADR is added when the change introduces new functionality or an architectural decision.
+- The branch is up to date with `main`, with no conflicts.
 - Commits follow the commit conventions, the pre-push hook and CI pass.
 - A PR is open, linked to the issue, with the template filled in and no AI attribution, and the card is in **In Review**.
 - The diff is focused and reviewable.

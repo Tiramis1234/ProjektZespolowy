@@ -27,6 +27,7 @@ Closes #
 ## Checklist
 
 - [ ] Issue is assigned to me and the work stays within my role
+- [ ] Pulled the latest `main`; conflicts resolved and all checks pass
 - [ ] Tests were written first (red → green → refactor)
 - [ ] Unit tests cover all new or changed logic
 - [ ] E2E tests cover affected user-facing flows
