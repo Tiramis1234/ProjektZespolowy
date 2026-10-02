@@ -15,3 +15,4 @@ git config core.hooksPath .githooks
 
 - Working standards, roles, branching, commits, and TDD rules: [AGENTS.md](AGENTS.md)
 - Architecture decisions: [docs/adr/](docs/adr/README.md)
+- Contributors and roles: [docs/CONTRIBUTORS.md](docs/CONTRIBUTORS.md)
