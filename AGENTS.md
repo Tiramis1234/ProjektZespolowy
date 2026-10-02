@@ -122,6 +122,8 @@ gh pr create --title "feat(auth): add login" --body-file <file>  # open PR
 
 All production code is written test-first.
 
+**Applies to:** production code — `feature/`, `bugfix/`, `hotfix/`, `refactor/`, and `test/` branches. **Exempt:** documentation, configuration, and CI-only changes (`docs/`, most `chore/`), and throwaway code on `spike/` and `research/` branches. Exempt changes still must not break existing tests.
+
 **Cycle:**
 
 1. **Red** — write a test for the next small piece of behavior. Run it and confirm it fails for the expected reason.
@@ -131,7 +133,7 @@ All production code is written test-first.
 **Rules:**
 
 - No production code without a failing test that requires it.
-- Every acceptance criterion in the issue maps to at least one test.
+- Every acceptance criterion in the issue maps to at least one test (unit, e2e, or regression — whichever fits).
 - Every commit leaves the suite green: commit a test together with the code that makes it pass.
 - Never delete, skip, or weaken a test to make it pass. Never lower coverage or mutation thresholds without owner approval.
 - Tests are deterministic, isolated, and fast. Unit tests do not touch the real network, clock, filesystem, or randomness — inject or fake them.
@@ -139,12 +141,12 @@ All production code is written test-first.
 
 **Test types:**
 
-| Type           | Purpose                                                   | Required for                                    | Default location     |
-| -------------- | --------------------------------------------------------- | ----------------------------------------------- | -------------------- |
-| **Unit**       | One function/module in isolation                          | All new or changed logic                        | `tests/unit/`        |
-| **E2E**        | Full user flows through the running application           | Every user-facing flow and acceptance criterion | `tests/e2e/`         |
-| **Regression** | Reproduce a fixed bug so it can never return              | Every bug fix — the failing test comes first    | `tests/regression/`  |
-| **Mutation**   | Prove the tests actually catch faults in the code         | All changed code (run in CI)                    | tool config          |
+| Type           | Purpose                                           | Required for                                 | Default location    |
+| -------------- | ------------------------------------------------- | -------------------------------------------- | ------------------- |
+| **Unit**       | One function/module in isolation                  | All new or changed logic                     | `tests/unit/`       |
+| **E2E**        | Full user flows through the running application   | Every new or changed user-facing flow        | `tests/e2e/`        |
+| **Regression** | Reproduce a fixed bug so it can never return      | Every bug fix — the failing test comes first | `tests/regression/` |
+| **Mutation**   | Prove the tests actually catch faults in the code | All changed production code (run in CI)      | tool config         |
 
 Use the stack's conventional layout if it differs from the defaults above, and record it in [Stack and Commands](#stack-and-commands).
 
@@ -292,9 +294,8 @@ ADRs live in `docs/adr/` and record why the project is built the way it is.
 A change is complete when:
 
 - The issue was assigned to you (or your co-author), the work stayed within your role, and the plan was approved.
-- Requested behavior is implemented test-first on its own issue branch.
-- Unit tests cover all new logic; e2e tests cover user-facing flows; bug fixes include a regression test.
-- Coverage on new and changed code is 100%, and mutation testing meets the threshold (or gaps are justified).
+- Requested behavior is implemented on its own issue branch.
+- For production code ([exemptions](#test-driven-development)): written test-first; unit tests cover all new logic, e2e tests cover user-facing flows, bug fixes include a regression test; coverage on new and changed code is 100% and mutation testing meets the threshold (or gaps are justified).
 - Documentation is updated when needed.
 - An ADR is added when the change introduces new functionality or an architectural decision.
 - The branch is up to date with `main`, with no conflicts.
